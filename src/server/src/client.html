@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebRTC Client</title>
+    <style>
+        video {
+            width: 640px;
+            height: 480px;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+<video id="remoteVideo" autoplay playsinline></video>
+<script>
+    const video = document.getElementById("remoteVideo");
+
+    const pc = new RTCPeerConnection();
+
+    const ws = new WebSocket("ws://localhost:3536");
+
+    ws.addEventListener("open", () => {
+        console.log("🔌 Connected to signaling server");
+    });
+
+    ws.addEventListener("message", async (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "offer") {
+            console.log("📨 Received offer");
+            await pc.setRemoteDescription({ type: "offer", sdp: msg.sdp });
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            ws.send(JSON.stringify({ type: "answer", sdp: answer.sdp }));
+        } else if (msg.type === "candidate") {
+            pc.addIceCandidate(msg);
+        }
+    });
+
+    pc.ontrack = (event) => {
+        console.log("✅ Remote track received", event.track);
+        video.srcObject = event.streams[0];
+
+        // Log video playback events
+        video.onplaying = () => console.log("🎥 Video is playing");
+        video.onloadeddata = () => console.log("📦 Video data loaded");
+        video.oncanplay = () => console.log("✅ Video can play");
+        video.onerror = (e) => console.error("❌ Video error", e);
+        video.addEventListener("waiting", () => console.warn("⏳ Video waiting"));
+        video.addEventListener("stalled", () => console.warn("🚧 Video stalled"));
+        video.addEventListener("error", () => console.error("❌ Video playback error", video.error));
+
+        // Optional: log per-frame stats
+        setInterval(async () => {
+            const stats = await pc.getStats();
+            stats.forEach(report => {
+                if (report.type === "inbound-rtp" && report.kind === "video") {
+                    console.log("📊 Video stats", report);
+                }
+            });
+        }, 2000);
+    };
+</script>
+</body>
+</html>

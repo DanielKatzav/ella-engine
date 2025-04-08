@@ -1,1 +1,7 @@
 /target
+
+.idea/
+
+src/server/target/
+
+src/client/target/

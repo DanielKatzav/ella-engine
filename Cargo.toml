@@ -1,28 +1,39 @@
-[package]
-name = "bevy_github_ci_template"
-version = "0.1.0"
-edition = "2021"
-license = "MIT OR Apache-2.0 OR CC0-1.0"
+[workspace]
+members = ["src/server", "src/client"]
+resolver = "2"
 
-# Compile with Performance Optimizations:
-# https://bevyengine.org/learn/book/getting-started/setup/#compile-with-performance-optimizations
+[workspace.dependencies]
+serde = "1.0.219"
+bevy = { version = "0.15", features = ["dynamic_linking", "bevy_render", "bevy_asset"] }
+bevy_matchbox = "0.11.0"
+bevy_ecs = "0.15"
+gstreamer = "0.23.5"
+gstreamer-video = "0.23.5"
+gstreamer-app = "0.23.5"
+lightyear = "0.19.1"
+tokio = { version = "1.44.2", features = ["macros", "sync", "time", "rt-multi-thread"] }
+tokio-tungstenite = "0.26.2"
+tungstenite = "0.26.2"
+webrtc = "0.12.0"
+futures = "0.3.31"
+futures-util = "0.3.31"
+serde_json = "1.0.140"
+tracy-client = "0.18.0"
+crossbeam-channel = "0.5.14"
+ffmpeg-next = "7.1.0"
 
-# Enable a small amount of optimization in debug mode
+[workspace.features]
+default = ["server", "client"]
+
+[workspace.lints.clippy]
+too_many_arguments = "allow"
+type_complexity = "allow"
+dead_code = "allow"
+unused_variables = "allow"
+unused_imports = "allow"
+
 [profile.dev]
 opt-level = 1
 
-# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
 [profile.dev.package."*"]
 opt-level = 3
-
-[dependencies]
-bevy = "0.15"
-
-# These lints may be important signals about code quality, but normal Bevy code
-# commonly triggers them and the CI workflow treats them as errors, so we've
-# chosen to allow them in this template.
-#
-# Feel free to delete the following lines.
-[lints.clippy]
-too_many_arguments = "allow"
-type_complexity = "allow"

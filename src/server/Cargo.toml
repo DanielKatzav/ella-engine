@@ -1,0 +1,22 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true }
+bevy_ecs = { workspace = true }
+serde = { workspace = true }
+gstreamer = { workspace = true }
+gstreamer-video = { workspace = true }
+gstreamer-app = { workspace = true }
+bevy_matchbox = { workspace = true }
+tokio = { workspace = true }
+tokio-tungstenite = { workspace = true }
+tungstenite = { workspace = true }
+webrtc = { workspace = true }
+futures = { workspace = true }
+futures-util = { workspace = true }
+serde_json = { workspace = true }
+tracy-client = { workspace = true }
+crossbeam-channel = { workspace = true }
